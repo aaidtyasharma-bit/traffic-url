@@ -1,0 +1,80 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redirecting...</title>
+
+    <meta http-equiv="refresh" content="10">
+
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+
+        .message {
+            font-size: 18px;
+        }
+
+        .error {
+            color: #c00;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="message" id="message">
+    Redirecting...
+</div>
+
+<script>
+(async function () {
+    const message = document.getElementById("message");
+
+    try {
+        // Read 1.txt from the same directory
+        const response = await fetch("1.txt", {
+            cache: "no-store"
+        });
+
+        if (!response.ok) {
+            throw new Error("Could not load 1.txt");
+        }
+
+        // Get the first line
+        const text = await response.text();
+        const url = text.split(/\r?\n/)[0].trim();
+
+        // Validate URL
+        const target = new URL(url);
+
+        if (target.protocol !== "http:" && target.protocol !== "https:") {
+            throw new Error("Invalid URL protocol");
+        }
+
+        message.textContent = "Redirecting...";
+
+        // Redirect
+        window.location.replace(target.href);
+
+    } catch (error) {
+        console.error(error);
+
+        message.classList.add("error");
+        message.textContent =
+            "Unable to find a valid redirect URL.";
+    }
+})();
+</script>
+
+</body>
+</html>
+
